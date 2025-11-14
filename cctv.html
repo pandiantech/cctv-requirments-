@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pandian Tech Service — CCTV Installation</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold-1:#F7CE68;
+    --gold-2:#FFB75E;
+    --gold-3:#FF8A00;
+    --muted:#5b5f66;
+    --card:#ffffff;
+    --glass-bg: rgba(255,255,255,0.14);
+    --glass-border: rgba(255,255,255,0.28);
+    --radius:18px;
+    --shadow: 0 12px 40px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background: linear-gradient(135deg,var(--gold-1),var(--gold-2),var(--gold-3));
+    padding:18px;
+    display:flex;align-items:center;justify-content:center;
+    color:#072031;
+  }
+  .app{width:100%;max-width:520px}
+  /* progress */
+  .progress{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+  .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.45);transition:.28s}
+  .dot.active{width:18px;height:18px;background:rgba(255,255,255,0.98);box-shadow:0 8px 22px rgba(0,0,0,0.12)}
+  .dot.done{background:rgba(255,255,255,0.98)}
+  /* card */
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;overflow:hidden;min-height:420px;
+  }
+  /* head */
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .logo{
+    width:72px;height:72px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(255,255,255,0.95));
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold-2);
+  }
+  .brand h1{margin:0;font-size:18px}
+  .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .lang-row{margin-left:auto;display:flex;gap:8px}
+  .top-lang{
+    padding:6px 10px;border-radius:12px;border:1px solid var(--glass-border);
+    background:var(--glass-bg);cursor:pointer;font-weight:700;
+  }
+  .top-lang.active{background:linear-gradient(90deg,var(--gold-1),var(--gold-2));color:white;border:0;box-shadow:0 8px 26px rgba(0,0,0,0.12)}
+  /* step animation: fade + slide up */
+  .step{display:none;opacity:0;transform:translateY(14px);transition:all .34s cubic-bezier(.2,.9,.25,1)}
+  .step.active{display:block;opacity:1;transform:translateY(0)}
+  .step-head{display:flex;align-items:flex-start;gap:12px}
+  .step-title{font-size:18px;font-weight:800;margin:0}
+  .step-sub{font-size:13px;color:var(--muted);margin-top:6px}
+  .return{background:transparent;border:0;color:var(--gold-2);font-weight:700;cursor:pointer;padding:8px;border-radius:10px}
+  .return[disabled]{opacity:.45;cursor:default}
+  /* grid options */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+  .opt{
+    padding:14px;border-radius:14px;background:linear-gradient(180deg,#fff,#fff);border:1px solid #f1e9d0;
+    display:flex;align-items:center;gap:12px;font-weight:700;cursor:pointer;transition:all .24s;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+  }
+  .opt .emoji{font-size:20px}
+  .opt:hover{transform:translateY(-6px)}
+  /* selected effect: gold glass */
+  .opt.selected{
+    background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.22);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.10);
+    color: #fff;
+    background-image: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)), linear-gradient(90deg,var(--gold-2),var(--gold-3));
+    background-blend-mode: overlay;
+  }
+  /* big language option style (glass) */
+  .langOpt{
+    padding:16px;border-radius:14px;font-weight:800;display:flex;align-items:center;gap:12px;cursor:pointer;
+    border:1px solid var(--glass-border);background:var(--glass-bg);
+  }
+  .langOpt.selected{
+    background:linear-gradient(90deg,var(--gold-1),var(--gold-2));color:white;border:0;box-shadow:0 12px 36px rgba(0,0,0,0.12);
+  }
+  /* features */
+  .features{display:grid;gap:10px;margin-top:12px}
+  .feature{
+    display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:#fff;border:1px solid #f1e9d0;cursor:pointer;transition:all .22s;
+  }
+  .feature:hover{transform:translateY(-4px)}
+  .feature.selected{background:linear-gradient(90deg,var(--gold-1),var(--gold-2));color:white;border:0;box-shadow:0 12px 30px rgba(0,0,0,0.10)}
+  .left{display:flex;align-items:center;gap:12px;font-weight:700}
+  .tick{
+    width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(0,0,0,0.06);opacity:0;transform:scale(.8);transition:all .28s;
+  }
+  .feature.selected .tick{background:#0ca76a;border:0;opacity:1;transform:scale(1)}
+  .tick svg{width:18px;height:18px;stroke:white;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  /* input/button */
+  select,input,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #e8e3d2;margin-top:10px;font-weight:600}
+  textarea{min-height:72px}
+  .btn{
+    width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.26);
+    background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    color:#222;font-weight:800;margin-top:14px;cursor:pointer;backdrop-filter: blur(6px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  }
+  .btn.primary{
+    color:white;
+    background: linear-gradient(90deg,var(--gold-1),var(--gold-2));
+    border:0;
+    box-shadow:0 14px 36px rgba(0,0,0,0.12);
+  }
+  .btn:disabled{opacity:.45;cursor:default}
+  .summary{margin-top:12px;padding:12px;border-radius:12px;background:#fffef7;border:1px solid #f1e9d0}
+  @media(max-width:420px){ .grid{grid-template-columns:1fr} .logo{width:58px;height:58px} .card{padding:14px} }
+</style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="CCTV Installation">
+    <div class="progress" id="progress"></div>
+
+    <div class="card" role="form" aria-labelledby="brandTitle">
+      <div class="head">
+        <div class="logo">PTS</div>
+        <div class="brand">
+          <h1 id="brandTitle">Pandian Tech Service</h1>
+          <div id="brandSub" style="font-size:13px;color:var(--muted)">CCTV Installation Setup</div>
+        </div>
+        <div class="lang-row" style="margin-left:auto">
+          <button class="top-lang active" id="langTopEn" data-lang="en">GB</button>
+          <button class="top-lang" id="langTopTa" data-lang="ta">IN</button>
+        </div>
+      </div>
+
+      <!-- Steps container -->
+      <div id="steps">
+
+        <!-- STEP 1 LANGUAGE -->
+        <section class="step active" data-step="1">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t1">Choose language / மொழியை தேர்ந்தெடுக்கவும்</div>
+              <div class="step-sub" id="s1">Select language to continue</div>
+            </div>
+            <button class="return" disabled>← Return</button>
+          </div>
+
+          <div class="grid" style="margin-top:14px">
+            <div class="langOpt selected" data-lang="en" id="langBigEn"><div class="emoji">🇬🇧</div><div style="font-weight:800">GB English</div></div>
+            <div class="langOpt" data-lang="ta" id="langBigTa"><div class="emoji">🇮🇳</div><div style="font-weight:800">IN தமிழ்</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 2 INSTALLATION -->
+        <section class="step" data-step="2">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t2">Installation Type</div>
+              <div class="step-sub" id="s2">Choose one</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="grid" id="installOpts">
+            <div class="opt" data-val="Home"><div class="emoji">🏠</div><div class="label">Home</div></div>
+            <div class="opt" data-val="Office"><div class="emoji">🏢</div><div class="label">Office</div></div>
+            <div class="opt" data-val="Shop"><div class="emoji">🏬</div><div class="label">Shop</div></div>
+            <div class="opt" data-val="Apartment"><div class="emoji">🏘️</div><div class="label">Apartment</div></div>
+            <div class="opt" data-val="Other" style="grid-column:span 2"><div class="emoji">🧭</div><div class="label">Other</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 3 AREA -->
+        <section class="step" data-step="3">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t3">Area Size</div>
+              <div class="step-sub" id="s3">Approximate sq.ft</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="grid" id="areaOpts">
+            <div class="opt" data-val="Below 500"><div class="emoji">📏</div><div class="label">Below 500</div></div>
+            <div class="opt" data-val="500–1000"><div class="emoji">📏</div><div class="label">500–1000</div></div>
+            <div class="opt" data-val="1000–2000"><div class="emoji">📏</div><div class="label">1000–2000</div></div>
+            <div class="opt" data-val="Above 2000"><div class="emoji">📏</div><div class="label">Above 2000</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 4 CAMERA COUNT -->
+        <section class="step" data-step="4">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t4">Camera Count</div>
+              <div class="step-sub" id="s4">Total cameras needed</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="grid" id="camOpts">
+            <div class="opt" data-val="1–2"><div class="emoji">🎥</div><div class="label">1–2</div></div>
+            <div class="opt" data-val="3–5"><div class="emoji">🎥</div><div class="label">3–5</div></div>
+            <div class="opt" data-val="6–10"><div class="emoji">🎥</div><div class="label">6–10</div></div>
+            <div class="opt" data-val="Above 10"><div class="emoji">🎥</div><div class="label">Above 10</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 5 INDOOR -->
+        <section class="step" data-step="5">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t5">Indoor Cameras</div>
+              <div class="step-sub" id="s5">Select count</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="grid" id="inOpts">
+            <div class="opt" data-val="1"><div class="emoji">🏠</div><div class="label">1</div></div>
+            <div class="opt" data-val="2"><div class="emoji">🏠</div><div class="label">2</div></div>
+            <div class="opt" data-val="3"><div class="emoji">🏠</div><div class="label">3</div></div>
+            <div class="opt" data-val="4+"><div class="emoji">🏠</div><div class="label">4+</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 6 OUTDOOR -->
+        <section class="step" data-step="6">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t6">Outdoor Cameras</div>
+              <div class="step-sub" id="s6">Select count</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="grid" id="outOpts">
+            <div class="opt" data-val="1"><div class="emoji">🏞️</div><div class="label">1</div></div>
+            <div class="opt" data-val="2"><div class="emoji">🏞️</div><div class="label">2</div></div>
+            <div class="opt" data-val="3"><div class="emoji">🏞️</div><div class="label">3</div></div>
+            <div class="opt" data-val="4+"><div class="emoji">🏞️</div><div class="label">4+</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 7 STORAGE -->
+        <section class="step" data-step="7">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t7">Storage</div>
+              <div class="step-sub" id="s7">Choose storage</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="grid" id="storeOpts">
+            <div class="opt" data-val="500GB"><div class="emoji">💾</div><div class="label">500GB</div></div>
+            <div class="opt" data-val="1TB"><div class="emoji">💾</div><div class="label">1TB</div></div>
+            <div class="opt" data-val="2TB"><div class="emoji">💾</div><div class="label">2TB</div></div>
+            <div class="opt" data-val="4TB"><div class="emoji">💾</div><div class="label">4TB</div></div>
+          </div>
+        </section>
+
+        <!-- STEP 8 FEATURES -->
+        <section class="step" data-step="8">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t8">Features</div>
+              <div class="step-sub" id="s8">Select one or more, then press Next</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <div class="features" id="featureList">
+            <div class="feature" data-val="Night Vision"><div class="left"><div class="emoji">🌙</div><div>Night Vision</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="Motion Alert"><div class="left"><div class="emoji">🛡️</div><div>Motion Alert</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="24/7 Recording"><div class="left"><div class="emoji">⏲️</div><div>24/7 Recording</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="Mobile Access"><div class="left"><div class="emoji">📱</div><div>Mobile Access</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="Audio"><div class="left"><div class="emoji">🔊</div><div>Audio</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="PTZ"><div class="left"><div class="emoji">🎯</div><div>PTZ</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="Face Detection"><div class="left"><div class="emoji">🙂</div><div>Face Detection</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="feature" data-val="Cloud Backup"><div class="left"><div class="emoji">☁️</div><div>Cloud Backup</div></div><div class="tick"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+          </div>
+
+          <button id="featuresNext" class="btn primary" disabled>Next</button>
+          <button class="return">← Return</button>
+        </section>
+
+        <!-- STEP 9 LOCATION -->
+        <section class="step" data-step="9">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t9">Location</div>
+              <div class="step-sub" id="s9">State • District • Full address</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <select id="stateSelect"><option value="">Select State</option><option>Tamil Nadu</option><option>Kerala</option><option>Karnataka</option><option>Andhra Pradesh</option></select>
+          <select id="districtSelect" disabled><option value="">Select District</option></select>
+          <textarea id="addressInput" placeholder="Full address (house no, street, landmark)"></textarea>
+
+          <button id="locNext" class="btn primary" disabled>Next</button>
+        </section>
+
+        <!-- STEP 10 CUSTOMER -->
+        <section class="step" data-step="10">
+          <div class="step-head">
+            <div>
+              <div class="step-title" id="t10">Customer Details</div>
+              <div class="step-sub" id="s10">Enter name and mobile to submit</div>
+            </div>
+            <button class="return">← Return</button>
+          </div>
+
+          <input id="custName" placeholder="Name (required)"/>
+          <input id="custPhone" placeholder="Mobile number (required)"/>
+
+          <div class="summary" id="summaryBox" aria-live="polite"></div>
+
+          <button id="submitBtn" class="btn primary">Submit & Send</button>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const total = 10;
+  let current = 1;
+  const steps = document.querySelectorAll('.step');
+  const progress = document.getElementById('progress');
+
+  // build dots
+  for(let i=1;i<=total;i++){
+    const d = document.createElement('div'); d.className='dot' + (i===1?' active':''); d.dataset.step=i;
+    progress.appendChild(d);
+  }
+
+  function showStep(n){
+    if(n<1) n=1; if(n>total) n=total;
+    current = n;
+    steps.forEach(s=> s.classList.remove('active'));
+    const el = document.querySelector('.step[data-step="'+n+'"]');
+    if(el) el.classList.add('active');
+    // update dots
+    document.querySelectorAll('.dot').forEach(dot=>{
+      const idx = Number(dot.dataset.step);
+      dot.classList.remove('active','done');
+      if(idx < n) dot.classList.add('done');
+      if(idx === n) dot.classList.add('active');
+    });
+    // render summary if final
+    if(n===10) renderSummary();
+  }
+
+  // initial show
+  showStep(1);
+
+  // return buttons
+  document.querySelectorAll('.return').forEach(btn=>{
+    btn.addEventListener('click', ()=> { if(current>1) showStep(current-1); });
+  });
+
+  // LANGUAGE: top toggles + big buttons
+  const topEn = document.getElementById('langTopEn'), topTa = document.getElementById('langTopTa');
+  const bigEn = document.getElementById('langBigEn'), bigTa = document.getElementById('langBigTa');
+
+  function activateTop(lang){
+    document.querySelectorAll('.top-lang').forEach(b=> b.classList.remove('active'));
+    if(lang==='en') topEn.classList.add('active'); else topTa.classList.add('active');
+  }
+  function activateBig(lang){
+    document.querySelectorAll('.langOpt').forEach(b=> b.classList.remove('selected'));
+    if(lang==='en') bigEn.classList.add('selected'); else bigTa.classList.add('selected');
+  }
+  function setLanguage(lang){
+    activateTop(lang); activateBig(lang);
+    // change texts
+    const isTa = lang==='ta';
+    document.getElementById('brandTitle').textContent = isTa? 'பாண்டியன் டெக் சர்வீஸ்':'Pandian Tech Service';
+    document.getElementById('brandSub').textContent = isTa? 'CCTV நிறுவல்':'CCTV Installation Setup';
+    const map = {
+      1:[ isTa? 'மொழியைத் தேர்ந்தெடுக்கவும்':'Choose language / மொழியை தேர்ந்தெடுக்கவும்', isTa? 'தொடர தேர்வு செய்யவும்':'Select language to continue' ],
+      2:[ isTa? 'நிறுவல் வகை':'Installation Type', isTa? 'ஒருவற்றை தேர்ந்தெடுக்கவும்':'Choose one' ],
+      3:[ isTa? 'பகுதி அளவு':'Area Size', isTa? 'சதுரஅடி (sq.ft)':'Approximate sq.ft' ],
+      4:[ isTa? 'கேமரா எண்ணிக்கை':'Camera Count', isTa? 'மொத்த கேமரா தேவை':'Total cameras needed' ],
+      5:[ isTa? 'உள்ளக கேமராக்கள்':'Indoor Cameras', isTa? 'எண்ணிக்கை தேர்வு':'Select count' ],
+      6:[ isTa? 'வெளிப்புற கேமராக்கள்':'Outdoor Cameras', isTa? 'எண்ணிக்கை தேர்வு':'Select count' ],
+      7:[ isTa? 'சேமிப்பு':'Storage', isTa? 'சேமிப்பை தேர்வு':'Choose storage' ],
+      8:[ isTa? 'வசதிகள்':'Features', isTa? 'ஒரு அல்லது பலவற்றை தேர்வு செய்தபின் அடுத்து அழுத்தவும்':'Select one or more, then press Next' ],
+      9:[ isTa? 'இடம்':'Location', isTa? 'மாநிலம் • மாவட்டம் • முகவரி':'State • District • Full address' ],
+      10:[ isTa? 'வாடிக்கையாளர் விவரம்':'Customer Details', isTa? 'பெயர் மற்றும் மொபைல்':'Enter name and mobile' ]
+    };
+    for(let i=1;i<=10;i++){
+      const t = document.getElementById('t'+i), s = document.getElementById('s'+i);
+      if(t) t.textContent = map[i][0];
+      if(s) s.textContent = map[i][1];
+    }
+    document.getElementById('featuresNext').textContent = isTa? 'அடுத்து':'Next';
+    document.getElementById('locNext').textContent = isTa? 'அடுத்து':'Next';
+    document.getElementById('submitBtn').textContent = isTa? 'அனுப்பு & பகிர்':'Submit & Send';
+    document.querySelectorAll('.return').forEach(r=> r.textContent = isTa? '← திரும்ப':'← Return');
+  }
+
+  // wire top buttons
+  topEn.addEventListener('click', ()=>{ setLanguage('en'); showStep(2); });
+  topTa.addEventListener('click', ()=>{ setLanguage('ta'); showStep(2); });
+
+  // wire big language options (fix for not working)
+  bigEn.addEventListener('click', ()=>{ setLanguage('en'); showStep(2); });
+  bigTa.addEventListener('click', ()=>{ setLanguage('ta'); showStep(2); });
+
+  // AUTO SELECT for single-choice steps
+  function autoWire(containerId, key){
+    const cont = document.getElementById(containerId);
+    if(!cont) return;
+    cont.querySelectorAll('.opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        cont.querySelectorAll('.opt').forEach(o=> o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[key] = opt.dataset.val || opt.textContent.trim();
+        setTimeout(()=> showStep(current+1), 320);
+      });
+    });
+  }
+
+  const answers = {installation:'',area:'',camcount:'',indoor:'',outdoor:'',storage:'',features:[],location:{state:'',district:'',address:''},name:'',phone:''};
+
+  autoWire('installOpts','installation');
+  autoWire('areaOpts','area');
+  autoWire('camOpts','camcount');
+  autoWire('inOpts','indoor');
+  autoWire('outOpts','outdoor');
+  autoWire('storeOpts','storage');
+
+  // FEATURES multi-select + tick animation
+  const featureEls = document.querySelectorAll('#featureList .feature');
+  const featuresNext = document.getElementById('featuresNext');
+
+  function updateFeatures(){
+    const chosen = [...document.querySelectorAll('#featureList .feature.selected')].map(f=>f.dataset.val);
+    answers.features = chosen;
+    featuresNext.disabled = chosen.length === 0;
+  }
+
+  featureEls.forEach(f=>{
+    f.addEventListener('click', ()=>{
+      f.classList.toggle('selected');
+      // small pop animation on selection
+      f.animate([{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:150});
+      updateFeatures();
+    });
+  });
+
+  featuresNext.addEventListener('click', ()=> { if(!featuresNext.disabled) showStep(9); });
+
+  // LOCATION logic
+  const districts = {
+    "Tamil Nadu":["Chennai","Madurai","Coimbatore","Salem"],
+    "Kerala":["Kochi","Thiruvananthapuram","Kozhikode"],
+    "Karnataka":["Bengaluru","Mysore","Mangalore"],
+    "Andhra Pradesh":["Visakhapatnam","Vijayawada","Guntur"]
+  };
+  const stateSel = document.getElementById('stateSelect'), distSel = document.getElementById('districtSelect'), addr = document.getElementById('addressInput'), locNext = document.getElementById('locNext');
+
+  stateSel.addEventListener('change', ()=>{
+    const v = stateSel.value; answers.location.state = v;
+    distSel.innerHTML = '<option value="">Select District</option>';
+    addr.value=''; answers.location.district=''; answers.location.address='';
+    locNext.disabled = true;
+    if(districts[v]){ distSel.disabled=false; districts[v].forEach(d=>{ const o=document.createElement('option'); o.value=d; o.textContent=d; distSel.appendChild(o); }); } else distSel.disabled=true;
+  });
+  distSel.addEventListener('change', ()=> { answers.location.district = distSel.value; checkLoc(); });
+  addr.addEventListener('input', ()=> { answers.location.address = addr.value.trim(); checkLoc(); });
+  function checkLoc(){ locNext.disabled = !(answers.location.district && answers.location.address && answers.location.address.length>5); }
+  locNext.addEventListener('click', ()=> showStep(10));
+
+  // SUMMARY render
+  function renderSummary(){
+    const box = document.getElementById('summaryBox');
+    box.innerHTML = `
+      <p><strong>Installation:</strong> ${escapeHtml(answers.installation || '-')}</p>
+      <p><strong>Area:</strong> ${escapeHtml(answers.area || '-')}</p>
+      <p><strong>Cameras:</strong> ${escapeHtml(answers.camcount || '-')}</p>
+      <p><strong>Indoor / Outdoor:</strong> ${escapeHtml(answers.indoor || '-')} / ${escapeHtml(answers.outdoor || '-')}</p>
+      <p><strong>Storage:</strong> ${escapeHtml(answers.storage || '-')}</p>
+      <p><strong>Features:</strong> ${answers.features.length ? escapeHtml(answers.features.join(', ')) : '-'}</p>
+      <p><strong>Location:</strong> ${answers.location.state ? escapeHtml(answers.location.state + ', ' + answers.location.district) : '-'}</p>
+      <p><strong>Address:</strong> ${escapeHtml(answers.location.address || '-')}</p>
+    `;
+  }
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // SUBMIT -> WhatsApp
+  document.getElementById('submitBtn').addEventListener('click', ()=>{
+    answers.name = document.getElementById('custName').value.trim();
+    answers.phone = document.getElementById('custPhone').value.trim();
+    if(!answers.name){ alert('Please enter name'); return; }
+    if(!/^\d{7,15}$/.test(answers.phone.replace(/\s+/g,''))){ alert('Please enter valid mobile number'); return; }
+    const lines = [
+      'Pandian Tech Service - CCTV Installation',
+      '---------------------------------------',
+      `Installation Type: ${answers.installation || '-'}`,
+      `Area Size: ${answers.area || '-'}`,
+      `Camera Count: ${answers.camcount || '-'}`,
+      `Indoor: ${answers.indoor || '-'}`,
+      `Outdoor: ${answers.outdoor || '-'}`,
+      `Storage: ${answers.storage || '-'}`,
+      `Features: ${answers.features.length ? answers.features.join(', ') : '-'}`,
+      `Location: ${answers.location.state ? answers.location.state + ', ' + (answers.location.district||'') : '-'}`,
+      `Address: ${answers.location.address || '-'}`,
+      '',
+      'Customer:',
+      `Name: ${answers.name}`,
+      `Mobile: ${answers.phone}`,
+      '',
+      '— Sent via Pandian Tech Service'
+    ];
+    window.open('https://wa.me/917200171230?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+  });
+
+  // keyboard nav
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'ArrowLeft' && current>1) showStep(current-1); if(e.key === 'ArrowRight' && current < total) showStep(current+1); });
+
+  // Prevent Enter early
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' && current !== 10) e.preventDefault(); });
+
+  // fill answers when single-selects clicked (for summary)
+  ['installOpts','areaOpts','camOpts','inOpts','outOpts','storeOpts'].forEach((id, idx)=>{
+    const map = ['installation','area','camcount','indoor','outdoor','storage'];
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('click', (ev)=>{
+      const opt = ev.target.closest('.opt'); if(!opt) return;
+      answers[map[idx]] = opt.dataset.val || opt.textContent.trim();
+    });
+  });
+
+  // ensure featuresNext initial state
+  updateInitialFeaturesState();
+  function updateInitialFeaturesState(){ const chosen = [...document.querySelectorAll('#featureList .feature.selected')].map(f=> f.dataset.val); answers.features = chosen; document.getElementById('featuresNext').disabled = chosen.length===0; }
+
+})();
+</script>
+</body>
+</html>
